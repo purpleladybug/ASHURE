@@ -1,4 +1,4 @@
-package edu.ohio_state.ling.myapplication;
+package edu.ohio_state.cse.ashure;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

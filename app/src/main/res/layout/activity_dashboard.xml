@@ -1,0 +1,33 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.ohio_state.cse.ashure.DashboardActivity"
+    tools:ignore="MergeRootFrame">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Placeholder"
+        android:id="@+id/question_text_received"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="50dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="89dp"
+        android:visibility="invisible"
+        android:layout_gravity="center" />
+
+
+</FrameLayout>
+
+
+
