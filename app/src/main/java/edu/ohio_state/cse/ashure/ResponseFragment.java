@@ -2,14 +2,31 @@ package edu.ohio_state.cse.ashure;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 /**
@@ -22,6 +39,9 @@ import android.widget.EditText;
  *
  */
 public class ResponseFragment extends Fragment {
+    private String watsonResponse;
+    private String errorResponse = "It looks like the network is having trouble. Please try your question again.";
+    private ProgressBar progressBar;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -84,9 +104,30 @@ public class ResponseFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String question) {
         if (mListener != null) {
+            TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
+            response.setText("");
             // pass the question back to the dashboard activity
             mListener.onQuestionAsked(question);
+            // query watson
+            submitQuery(question);
+
         }
+    }
+
+    private void displayResponse(JSONObject formattedResponse) {
+        TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
+        // set the response text to the first answer given by Watson
+        try {
+            JSONArray answers = formattedResponse.getJSONArray("answers");
+            response.setText(answers.getJSONObject(0).getString("text"));
+        } catch (JSONException e) {
+            response.setText("I'm not sure... can you try rephrasing the question?");
+        }
+    }
+
+    private void displayError() {
+        TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
+        response.setText(errorResponse);
     }
 
     @Override
@@ -118,6 +159,115 @@ public class ResponseFragment extends Fragment {
      */
     public interface OnQuestionAskedListener {
         public void onQuestionAsked(String string);
+        public void onAnswerReceived(JSONObject answer);
     }
 
+    public void submitQuery(String questionText) {
+        progressBar = (ProgressBar)getActivity().findViewById(R.id.progress_bar);
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            progressBar.setVisibility(View.VISIBLE);
+            new WatsonTask().execute(questionText);
+        } else {
+            watsonResponse = "No network connection available.";
+        }
+    }
+
+    private class WatsonTask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            watsonResponse = errorResponse;
+            String id = "osu_student7", passwd = "sRK6Ugnn";    // will be given
+
+            //String question = "Was Doctor Zhivago shown in Russia?";
+            String question = "";
+            if (strings.length > 0) {
+                question = strings[0];
+            }
+
+            URL watsonURL = null;
+            try {
+                watsonURL = new URL("https://watson-wdc01.ihost.com/instance/501/deepqa/v1/question");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            HttpURLConnection conn;
+
+
+            try {
+                conn = (HttpURLConnection) watsonURL.openConnection();
+            } catch (Exception e) {
+                return watsonResponse;
+            }
+
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("X-SyncTimeout", "30");
+            String auth = Base64.encodeToString((id + ":" + passwd).getBytes(), Base64.DEFAULT);
+            conn.setRequestProperty("Authorization", "Basic " + auth);
+            conn.setDoOutput(true);
+
+            try {
+                conn.getOutputStream().write(("{\"question\" : {\"questionText\":\"" + question + "\"}}").getBytes());
+            } catch (IOException e) {
+                return watsonResponse;
+            }
+
+            BufferedReader in;
+            try {
+                in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } catch (IOException e) {
+                return watsonResponse;
+            }
+
+            String line;
+            try {
+                line = in.readLine();
+                if (line != null) {
+                    watsonResponse = "";
+                }
+                while (line != null) {
+                    watsonResponse += line;
+                    line = in.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //System.out.println(watsonResponse);
+
+            return watsonResponse;
+            //return "This is a hardcoded response";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            progressBar.setVisibility(View.INVISIBLE);
+
+            JSONObject wrapper;
+            try {
+                if (result != null) {
+                    wrapper = new JSONObject(result);
+                    if (result.equals(errorResponse)) {
+                        displayError();
+                        return;
+                    }
+                    JSONObject response = wrapper.getJSONObject("question");
+                    // display the response
+                    displayResponse(response);
+                    // pass the response back to the dashboard activity
+                    mListener.onAnswerReceived(response);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
