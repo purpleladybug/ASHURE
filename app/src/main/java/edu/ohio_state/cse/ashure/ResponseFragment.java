@@ -41,6 +41,7 @@ import java.net.URL;
 public class ResponseFragment extends Fragment {
     private String watsonResponse;
     private String errorResponse = "It looks like the network is having trouble. Please try your question again.";
+    private TextView responseTextView;
     private ProgressBar progressBar;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -104,8 +105,8 @@ public class ResponseFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String question) {
         if (mListener != null) {
-            TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
-            response.setText("");
+            responseTextView = (TextView)getActivity().findViewById(R.id.watson_response);
+            responseTextView.setText("");
             // pass the question back to the dashboard activity
             mListener.onQuestionAsked(question);
             // query watson
@@ -115,19 +116,20 @@ public class ResponseFragment extends Fragment {
     }
 
     private void displayResponse(JSONObject formattedResponse) {
-        TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
+        responseTextView = (TextView)getActivity().findViewById(R.id.watson_response);
         // set the response text to the first answer given by Watson
         try {
             JSONArray answers = formattedResponse.getJSONArray("answers");
-            response.setText(answers.getJSONObject(0).getString("text"));
+            responseTextView.setVisibility(View.VISIBLE);
+            responseTextView.setText(answers.getJSONObject(0).getString("text"));
         } catch (JSONException e) {
-            response.setText("I'm not sure... can you try rephrasing the question?");
+            responseTextView.setText("I'm not sure... can you try rephrasing the question?");
         }
     }
 
     private void displayError() {
-        TextView response = (TextView)getActivity().findViewById(R.id.watson_response);
-        response.setText(errorResponse);
+        responseTextView = (TextView)getActivity().findViewById(R.id.watson_response);
+        responseTextView.setText(errorResponse);
     }
 
     @Override
@@ -164,10 +166,12 @@ public class ResponseFragment extends Fragment {
 
     public void submitQuery(String questionText) {
         progressBar = (ProgressBar)getActivity().findViewById(R.id.progress_bar);
+        responseTextView = (TextView)getActivity().findViewById(R.id.watson_response);
         ConnectivityManager connMgr = (ConnectivityManager)
                 getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+            responseTextView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             new WatsonTask().execute(questionText);
         } else {
@@ -250,7 +254,6 @@ public class ResponseFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             progressBar.setVisibility(View.INVISIBLE);
-
             JSONObject wrapper;
             try {
                 if (result != null) {

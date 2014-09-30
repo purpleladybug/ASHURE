@@ -1,14 +1,16 @@
 package edu.ohio_state.cse.ashure;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 
 import org.json.JSONObject;
 
 
-public class DashboardActivity extends ActionBarActivity implements ResponseFragment.OnQuestionAskedListener {
+public class DashboardActivity extends ActionBarActivity implements ResponseFragment.OnQuestionAskedListener, SocialFragment.OnSocialFragmentTouchedListener {
 
 
 
@@ -16,10 +18,12 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentContainer, new ResponseFragment())
+                    .add(R.id.fragmentContainer, new ResponseFragment(), "response")
+                    .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentContainer, new SocialFragment(), "social")
                     .commit();
         }
     }
@@ -45,10 +49,25 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
 
     public void onQuestionAsked(String string) {
         // do any processing on our end while Watson is working
+        SocialFragment socialFrag = (SocialFragment) getSupportFragmentManager()
+                .findFragmentByTag("social");
+        // query and display related tweets in the social fragment
+        socialFrag.query(string);
     }
 
     @Override
     public void onAnswerReceived(JSONObject answer) {
         // deal with the answer and evidence returned by Watson
+        final ScrollView sv = (ScrollView)findViewById(R.id.scroll);
+        sv.post(new Runnable() {
+            public void run() {
+                sv.smoothScrollBy(0, 500);
+            }
+        });
+    }
+
+    @Override
+    public void onSocialFragmentTouched(Uri uri) {
+        // launch the social activity
     }
 }
