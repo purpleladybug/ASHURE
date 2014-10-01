@@ -1,15 +1,18 @@
 package edu.ohio_state.cse.ashure;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.ScrollView;
+
+import org.json.JSONObject;
 
 
-public class DashboardActivity extends ActionBarActivity implements ResponseFragment.OnQuestionAskedListener {
+public class DashboardActivity extends ActionBarActivity implements ResponseFragment.OnQuestionAskedListener, SocialFragment.OnSocialFragmentTouchedListener {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +20,10 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
         setContentView(R.layout.activity_dashboard);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentContainer, new ResponseFragment())
+                    .add(R.id.fragmentContainer, new ResponseFragment(), "response")
+                    .commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentContainer, new SocialFragment(), "social")
                     .commit();
         }
     }
@@ -41,18 +47,27 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * This method receives the question text after the user presses the "Ask" button.
-     * @param question The text the user provided before hitting "Ask"
-     */
+    public void onQuestionAsked(String string) {
+        // do any processing on our end while Watson is working
+        SocialFragment socialFrag = (SocialFragment) getSupportFragmentManager()
+                .findFragmentByTag("social");
+        // query and display related tweets in the social fragment
+        socialFrag.query(string);
+    }
+
     @Override
-    public void onQuestionAsked(String question) {
-        // display the question provided by the fragment (for testing)
-        TextView text = (TextView) this.findViewById(R.id.question_text_received);
-        text.setText(question);
-        // display the progress bar while Watson is "thinking" and our
-        // pre-processing is taking place.
-        ProgressBar progressBar = (ProgressBar)this.findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+    public void onAnswerReceived(JSONObject answer) {
+        // deal with the answer and evidence returned by Watson
+        final ScrollView sv = (ScrollView)findViewById(R.id.scroll);
+        sv.post(new Runnable() {
+            public void run() {
+                sv.smoothScrollBy(0, 500);
+            }
+        });
+    }
+
+    @Override
+    public void onSocialFragmentTouched(Uri uri) {
+        // launch the social activity
     }
 }

@@ -2,11 +2,12 @@
 <resources>
 
     <string name="app_name">ASHURE</string>
-    <string name="title_activity_dashboard">Dashboard</string>
+    <string name="title_activity_dashboard">ASHURE</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="blank_response_fragment">This is the response fragment.</string>
     <string name="question_prompt">What would you like to know?</string>
     <string name="question_button">Ask</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
