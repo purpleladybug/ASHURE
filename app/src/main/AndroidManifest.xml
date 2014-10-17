@@ -25,6 +25,10 @@
             android:name=".ResponseActivity"
             android:label="@string/title_activity_response" >
         </activity>
+        <activity
+            android:name=".SocialActivity"
+            android:label="@string/title_activity_social" >
+        </activity>
     </application>
 
 </manifest>

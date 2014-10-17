@@ -1,6 +1,7 @@
 package edu.ohio_state.cse.ashure;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -28,6 +31,8 @@ import twitter4j.conf.ConfigurationBuilder;
  *
  */
 public class SocialFragment extends Fragment {
+    private static boolean resultsfound = false;
+
     private static final String CONSUMER_KEY = "de35A2ADPTpqCKhf2JpvvnKxb";
     private static final String CONSUMER_SECRET = "Uvf7KBmAtavay0DACXERY5QwxqUCSVDOH6FSL3BNx6xBTYzAK0";
     private static final String ACCESS_TOKEN = "21344210-DkshJlefgcQNwix1uYYNftKFWQu07ekaUZBwE8xSk";
@@ -78,7 +83,19 @@ public class SocialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_social, container, false);
+        final View v = inflater.inflate(R.layout.fragment_social, container, false);
+
+        final TextView clickableText = (TextView)v.findViewById(R.id.social_text);
+        clickableText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), SocialActivity.class);
+                startActivity(i);
+            }
+        });
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -151,9 +168,11 @@ public class SocialFragment extends Fragment {
                     resultString += ": ";
                     resultString += status.getText();
                     resultString += "\n\n";
+                    resultsfound = true;
                 }
             } else {
                 resultString = "No social results found.";
+                resultsfound = false;
             }
             return resultString;
         }
@@ -164,6 +183,13 @@ public class SocialFragment extends Fragment {
             TextView tweets = (TextView)getActivity().findViewById(R.id.social_text);
             tweets.setVisibility(View.VISIBLE);
             tweets.setText(result);
+
+            if(resultsfound) {
+                tweets.setClickable(true);
+            }
+            else {
+                tweets.setClickable(false);
+            }
         }
     }
 

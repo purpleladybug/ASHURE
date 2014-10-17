@@ -13,7 +13,6 @@ import android.widget.TextView;
  * Created by Woods on 10/14/14.
  */
 public class AlertFragment extends Fragment {
-    private static final String TAG = "AlertFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,8 +28,6 @@ public class AlertFragment extends Fragment {
         final TextView clickableText = (TextView)v.findViewById(R.id.alert_message);
         clickableText.setOnClickListener(new View.OnClickListener() {
 
-
-
             public void onClick(View v) {
                 
                 Intent i = new Intent(getActivity(),AlertActivity.class);
@@ -40,8 +37,6 @@ public class AlertFragment extends Fragment {
 
         return v;
     }
-
-
 
 
 }

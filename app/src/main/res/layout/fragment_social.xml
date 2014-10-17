@@ -14,6 +14,8 @@
         android:layout_height="200dp"
         android:text="@string/hello_blank_fragment"
         android:background="@drawable/bg_card"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:clickable="false"
+        />
 
 </RelativeLayout>

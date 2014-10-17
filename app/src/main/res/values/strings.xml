@@ -13,5 +13,6 @@
     <string name="hello_alert_activity">Hello world! I am a new activity from alert!</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_response">ResponseActivity</string>
+    <string name="title_activity_social">SocialActivity</string>
 
 </resources>

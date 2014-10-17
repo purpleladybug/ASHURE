@@ -184,6 +184,7 @@ public class ResponseFragment extends Fragment {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             responseTextView.setVisibility(View.INVISIBLE);
+            responseTextView.setClickable(false);
             progressBar.setVisibility(View.VISIBLE);
             new WatsonTask().execute(questionText);
         } else {
