@@ -20,6 +20,9 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
         setContentView(R.layout.activity_dashboard);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentContainer, new AlertFragment(), "alert")
+                    .commit();
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragmentContainer, new ResponseFragment(), "response")
                     .commit();
             getSupportFragmentManager().beginTransaction()
@@ -70,4 +73,6 @@ public class DashboardActivity extends ActionBarActivity implements ResponseFrag
     public void onSocialFragmentTouched(Uri uri) {
         // launch the social activity
     }
+
+
 }

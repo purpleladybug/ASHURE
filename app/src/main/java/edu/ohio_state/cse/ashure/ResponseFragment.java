@@ -2,6 +2,7 @@ package edu.ohio_state.cse.ashure;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -122,6 +123,17 @@ public class ResponseFragment extends Fragment {
             JSONArray answers = formattedResponse.getJSONArray("answers");
             responseTextView.setVisibility(View.VISIBLE);
             responseTextView.setText(answers.getJSONObject(0).getString("text"));
+
+            responseTextView.setClickable(true);
+            responseTextView.setOnClickListener(new View.OnClickListener() {
+
+
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(), ResponseActivity.class);
+                    startActivity(i);
+                }
+            });
         } catch (JSONException e) {
             responseTextView.setText("I'm not sure... can you try rephrasing the question?");
         }
