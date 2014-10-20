@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Twitter;
@@ -33,10 +31,10 @@ import twitter4j.conf.ConfigurationBuilder;
 public class SocialFragment extends Fragment {
     private static boolean resultsfound = false;
 
-    private static final String CONSUMER_KEY = "de35A2ADPTpqCKhf2JpvvnKxb";
-    private static final String CONSUMER_SECRET = "Uvf7KBmAtavay0DACXERY5QwxqUCSVDOH6FSL3BNx6xBTYzAK0";
-    private static final String ACCESS_TOKEN = "21344210-DkshJlefgcQNwix1uYYNftKFWQu07ekaUZBwE8xSk";
-    private static final String ACCESS_TOKEN_SECRET = "XwMfw9HfxDD9APoNuWGpJTw7esuE6VWHZiAvIucBXhBtQ";
+    private static final String CONSUMER_KEY = "";
+    private static final String CONSUMER_SECRET =  "";
+    private static final String ACCESS_TOKEN =  "";
+    private static final String ACCESS_TOKEN_SECRET =  "";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
